@@ -6,7 +6,7 @@ import { defineConfig } from 'vite'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: './',
+  base: '/private-sns.github.io/',// リポジトリ名を指定
   plugins: [
     react(),
     legacy()
