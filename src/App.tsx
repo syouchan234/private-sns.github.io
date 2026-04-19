@@ -1,29 +1,26 @@
-import { Redirect, Route } from 'react-router-dom';
+import React, { useEffect, useState } from 'react'; // ReactとuseEffect/useStateをインポート
 import {
   IonApp,
+  IonButton,
+  IonFooter,
   IonIcon,
   IonLabel,
-  IonRouterOutlet,
-  IonTabBar,
-  IonTabButton,
-  IonTabs,
+  IonPage,
+  IonToolbar,
   setupIonicReact
-} from '@ionic/react';
-import { IonReactRouter } from '@ionic/react-router';
-import { ellipse, square, triangle } from 'ionicons/icons';
-import Tab1 from './pages/Tab1';
-import Tab2 from './pages/Tab2';
-import Tab3 from './pages/Tab3';
+} from '@ionic/react'; // Ionicのコンポーネントをインポート
+import { ellipse, square, triangle } from 'ionicons/icons'; // アイコンをインポート
+import Tab1 from './pages/Tab1'; // Tab1ページをインポート
+import Tab2 from './pages/Tab2'; // Tab2ページをインポート
+import Tab3 from './pages/Tab3'; // Tab3ページをインポート
+import LoginForm from './components/LoginForm'; // ログインフォームをインポート
 
-/* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
 
-/* Basic CSS for apps built with Ionic */
 import '@ionic/react/css/normalize.css';
 import '@ionic/react/css/structure.css';
 import '@ionic/react/css/typography.css';
 
-/* Optional CSS utils that can be commented out */
 import '@ionic/react/css/padding.css';
 import '@ionic/react/css/float-elements.css';
 import '@ionic/react/css/text-alignment.css';
@@ -31,57 +28,116 @@ import '@ionic/react/css/text-transformation.css';
 import '@ionic/react/css/flex-utils.css';
 import '@ionic/react/css/display.css';
 
-/**
- * Ionic Dark Mode
- * -----------------------------------------------------
- * For more info, please see:
- * https://ionicframework.com/docs/theming/dark-mode
- */
-
-/* import '@ionic/react/css/palettes/dark.always.css'; */
-/* import '@ionic/react/css/palettes/dark.class.css'; */
 import '@ionic/react/css/palettes/dark.system.css';
 
 /* Theme variables */
 import './theme/variables.css';
 
-setupIonicReact();
+setupIonicReact(); // Ionic Reactのセットアップ
 
-const App: React.FC = () => (
-  <IonApp>
-    <IonReactRouter>
-      <IonTabs>
-        <IonRouterOutlet>
-          <Route exact path="/tab1">
-            <Tab1 />
-          </Route>
-          <Route exact path="/tab2">
-            <Tab2 />
-          </Route>
-          <Route path="/tab3">
-            <Tab3 />
-          </Route>
-          <Route exact path="/">
-            <Redirect to="/tab1" />
-          </Route>
-        </IonRouterOutlet>
-        <IonTabBar slot="bottom">
-          <IonTabButton tab="tab1" href="/tab1">
-            <IonIcon aria-hidden="true" icon={triangle} />
-            <IonLabel>Tab 1</IonLabel>
-          </IonTabButton>
-          <IonTabButton tab="tab2" href="/tab2">
-            <IonIcon aria-hidden="true" icon={ellipse} />
-            <IonLabel>Tab 2</IonLabel>
-          </IonTabButton>
-          <IonTabButton tab="tab3" href="/tab3">
-            <IonIcon aria-hidden="true" icon={square} />
-            <IonLabel>Tab 3</IonLabel>
-          </IonTabButton>
-        </IonTabBar>
-      </IonTabs>
-    </IonReactRouter>
-  </IonApp>
-);
+const App: React.FC = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState(() => {
+    if (typeof window === 'undefined') {
+      return false;
+    }
+    return window.localStorage.getItem('isLoggedIn') === 'true';
+  }); // ログイン状態を管理
+  const [activeTab, setActiveTab] = useState('tab1'); // アクティブなタブを管理
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      window.localStorage.setItem('isLoggedIn', isLoggedIn ? 'true' : 'false');
+    }
+  }, [isLoggedIn]);
+
+  // タブが切り替わったときにスクロール位置をトップにリセット（疑似ページ遷移の補完）
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      window.scrollTo(0, 0);
+    }
+  }, [activeTab]);
+
+  // ログインしていない場合、ログインフォームを表示
+  if (!isLoggedIn) {
+    return (
+      <IonApp>
+        <LoginForm onLogin={() => setIsLoggedIn(true)} />
+      </IonApp>
+    );
+  }
+
+  // ログインしている場合、タブコンテンツとタブバーを表示
+  return (
+    <IonApp>
+      <IonPage>
+        {/* 疑似遷移を確実にするため、各ページコンポーネントを表示。
+            条件付きレンダリングにより、アクティブなタブのみがDOMに描画されます。
+        */}
+        <main style={{ height: 'calc(100vh - 56px)', overflow: 'auto' }}>
+          {activeTab === 'tab1' && <Tab1 />}
+          {/* {activeTab === 'tab2' && <Tab2 />} */}
+          {activeTab === 'tab3' && <Tab3 />}
+        </main>
+
+        {/* タブ風のフッターボタンで画面切り替え */}
+        <IonFooter>
+          <IonToolbar>
+            <div style={{ display: 'flex', width: '100%' }}>
+              <IonButton
+                fill="clear"
+                style={{
+                  flex: 1,
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  display: 'flex',
+                }}
+                strong={activeTab === 'tab1'}
+                onClick={() => setActiveTab('tab1')}
+              >
+                <IonIcon aria-hidden="true" icon={triangle} />
+                <IonLabel>Home</IonLabel>
+              </IonButton>
+
+              {/*
+              <IonButton
+                fill="clear"
+                style={{
+                  flex: 1,
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  display: 'flex',
+                }}
+                strong={activeTab === 'tab2'}
+                onClick={() => setActiveTab('tab2')}
+              >
+                <IonIcon aria-hidden="true" icon={ellipse} />
+                <IonLabel>Tab 2</IonLabel>
+              </IonButton>
+              */}
+
+              <IonButton
+                fill="clear"
+                style={{
+                  flex: 1,
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  display: 'flex',
+                }}
+                strong={activeTab === 'tab3'}
+                onClick={() => setActiveTab('tab3')}
+              >
+                <IonIcon aria-hidden="true" icon={square} />
+                <IonLabel>Profile</IonLabel>
+              </IonButton>
+            </div>
+          </IonToolbar>
+        </IonFooter>
+      </IonPage>
+    </IonApp>
+  );
+};
 
 export default App;
