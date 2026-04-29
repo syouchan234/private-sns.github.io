@@ -8,12 +8,15 @@ import {
   IonPage,
   IonToolbar,
   setupIonicReact
-} from '@ionic/react'; // Ionicのコンポーネントをインポート
+} from './constants/ionicComponents'; // Ionicのコンポーネントをインポート
 import { ellipse, square, triangle } from 'ionicons/icons'; // アイコンをインポート
 import Tab1 from './pages/Tab1'; // Tab1ページをインポート
 import Tab2 from './pages/Tab2'; // Tab2ページをインポート
 import Tab3 from './pages/Tab3'; // Tab3ページをインポート
 import LoginForm from './components/LoginForm'; // ログインフォームをインポート
+
+// ユーザー情報の型定義
+import { User } from './users';
 
 import '@ionic/react/css/core.css';
 
@@ -42,13 +45,44 @@ const App: React.FC = () => {
     }
     return window.localStorage.getItem('isLoggedIn') === 'true';
   }); // ログイン状態を管理
+  const [currentUser, setCurrentUser] = useState<User | null>(() => {
+    if (typeof window === 'undefined') {
+      return null;
+    }
+    const userData = window.localStorage.getItem('currentUser');
+    const user = userData ? JSON.parse(userData) : null;
+    console.log('Loaded from localStorage:', user);
+    return user;
+  }); // 現在のユーザー情報を管理
   const [activeTab, setActiveTab] = useState('tab1'); // アクティブなタブを管理
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
       window.localStorage.setItem('isLoggedIn', isLoggedIn ? 'true' : 'false');
+      if (currentUser) {
+        window.localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        console.log('Saved to localStorage:', currentUser);
+      } else {
+        window.localStorage.removeItem('currentUser');
+        console.log('Removed currentUser from localStorage');
+      }
     }
-  }, [isLoggedIn]);
+  }, [isLoggedIn, currentUser]);
+
+  // ログイン処理
+  const handleLogin = (user: User) => {
+    console.log('Login successful:', user);
+    setCurrentUser(user);
+    setIsLoggedIn(true);
+    setActiveTab('tab3'); // ログイン後にProfileタブに移動
+  };
+
+  // ログアウト処理
+  const handleLogout = () => {
+    setCurrentUser(null);
+    setIsLoggedIn(false);
+    setActiveTab('tab1');
+  };
 
   // タブが切り替わったときにスクロール位置をトップにリセット（疑似ページ遷移の補完）
   useEffect(() => {
@@ -61,7 +95,7 @@ const App: React.FC = () => {
   if (!isLoggedIn) {
     return (
       <IonApp>
-        <LoginForm onLogin={() => setIsLoggedIn(true)} />
+        <LoginForm onLogin={handleLogin} />
       </IonApp>
     );
   }
@@ -76,7 +110,7 @@ const App: React.FC = () => {
         <main style={{ height: 'calc(100vh - 56px)', overflow: 'auto' }}>
           {activeTab === 'tab1' && <Tab1 />}
           {/* {activeTab === 'tab2' && <Tab2 />} */}
-          {activeTab === 'tab3' && <Tab3 />}
+          {activeTab === 'tab3' && <Tab3 user={currentUser} onLogout={handleLogout} />}
         </main>
 
         {/* タブ風のフッターボタンで画面切り替え */}
