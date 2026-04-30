@@ -16,7 +16,7 @@ import Tab3 from './pages/Tab3'; // Tab3ページをインポート
 import LoginForm from './components/LoginForm'; // ログインフォームをインポート
 
 // ユーザー情報の型定義
-import { User } from './users';
+import { User } from './services/api';
 
 import '@ionic/react/css/core.css';
 
@@ -133,7 +133,7 @@ const App: React.FC = () => {
                 <IonLabel>Home</IonLabel>
               </IonButton>
 
-              {/*
+              
               <IonButton
                 fill="clear"
                 style={{
@@ -147,9 +147,9 @@ const App: React.FC = () => {
                 onClick={() => setActiveTab('tab2')}
               >
                 <IonIcon aria-hidden="true" icon={ellipse} />
-                <IonLabel>Tab 2</IonLabel>
+                <IonLabel>TestPage</IonLabel>
               </IonButton>
-              */}
+             
 
               <IonButton
                 fill="clear"

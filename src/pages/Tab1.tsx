@@ -20,22 +20,24 @@ const Tab1: React.FC = () => {
   const [postContent, setPostContent] = useState('');
   const [posts, setPosts] = useState<Post[]>([
     {
-      id: 1,
-      author: 'テストユーザー',
-      avatar: 'https://via.placeholder.com/40',
+      postId: '1',
+      userId: 'u1',
+      username: 'テストユーザー',
       content: 'こんにちは！最初の投稿です。',
       timestamp: '2分前',
+      profileImageId: 'https://via.placeholder.com/40',
       likes: 5,
-      comments: 2,
+      replyCount: 2,
     },
     {
-      id: 2,
-      author: 'デモユーザー',
-      avatar: 'https://via.placeholder.com/40',
+      postId: '2',
+      userId: 'u2',
+      username: 'デモユーザー',
       content: 'SNSアプリのテストを開始しました。',
       timestamp: '1時間前',
+      profileImageId: 'https://via.placeholder.com/40',
       likes: 12,
-      comments: 4,
+      replyCount: 4,
     },
   ]);
 
@@ -46,13 +48,14 @@ const Tab1: React.FC = () => {
     }
 
     const newPost: Post = {
-      id: posts.length + 1,
-      author: 'あなた',
-      avatar: 'https://via.placeholder.com/40',
+      postId: String(posts.length + 1),
+      userId: 'current',
+      username: 'あなた',
       content: postContent,
       timestamp: '今',
+      profileImageId: 'https://via.placeholder.com/40',
       likes: 0,
-      comments: 0,
+      replyCount: 0,
     };
 
     setPosts([newPost, ...posts]);
@@ -61,11 +64,11 @@ const Tab1: React.FC = () => {
   };
 
   // 返信を追加
-  const handleReplySubmit = (postId: number, replyContent: string) => {
+  const handleReplySubmit = (postId: string, replyContent: string) => {
     setPosts(
       posts.map(post =>
-        post.id === postId
-          ? { ...post, comments: post.comments + 1 }
+        post.postId === postId
+          ? { ...post, replyCount: (post.replyCount ?? 0) + 1 }
           : post
       )
     );

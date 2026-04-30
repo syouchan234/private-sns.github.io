@@ -19,7 +19,7 @@ import {
 } from '../constants/ionicComponents';
 import { personCircle, heart, chatbubble, share } from 'ionicons/icons';
 import './Tab3.css';
-import { User } from '../users';
+import { User } from '../services/api';
 
 interface Tab3Props {
   user: User | null;
@@ -29,7 +29,7 @@ interface Tab3Props {
 const Tab3: React.FC<Tab3Props> = ({ user, onLogout }) => {
   const [showLogoutAlert, setShowLogoutAlert] = React.useState(false);
 
-  const GAS_URL = 'https://script.google.com/macros/s/AKfycby83hYqwRE8BvvDBAZYW-cbK4dVrOs90eYiLgxqHDAIhxBB9dQTimDP78xewL-Ximt1/exec';
+  const GAS_URL = 'https://script.google.com/macros/s/AKfycbyHkSezXu5oaf3FLamuHyFIjGlqUFkdRjdmxjKBcbn9ZsWnPtQDkCfgww3omwD3bAVr/exec';
   /**
    * 1. GETテスト：A2セルの値を取得する
    */
@@ -53,20 +53,29 @@ const Tab3: React.FC<Tab3Props> = ({ user, onLogout }) => {
    * GAS側がdoGetで待ち受けているため、クエリパラメータでデータを送ります
    */
 const runPostTest = async () => {
-    try {
-      console.log('--- POST(認証)テスト開始 ---');
-      const url = `${GAS_URL}?mode=Auth`;
-      
-      const response = await fetch(url, {
-        method: 'POST',
-      });
-      const result = await response.json();
+  try {
+    console.log('--- POST(body)テスト開始 ---');
+    
+    const postBody = new URLSearchParams();
+    postBody.append('mode', 'Auth');//認証モード
+    postBody.append('pass', 'PASSWORD');
 
-      console.log('POST(認証) レスポンス:', result);
-    } catch (e: any) {
-      console.error('POST通信エラー:', e);
-    }
-  };
+    const response = await fetch(GAS_URL, {
+      method: 'POST',
+      // headers をあえて指定しない、もしくは以下のように設定
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: postBody,
+      redirect: 'follow',
+    });
+
+    const result = await response.json();
+    console.log('POST成功:', result);
+  } catch (e: any) {
+    console.error('POST通信エラー:', e);
+  }
+};
   console.log('Tab3 user prop:', user);
 
   if (!user) {
@@ -99,29 +108,32 @@ const runPostTest = async () => {
         <IonCardHeader>
           <div style={{ display: 'flex', alignItems: 'center', padding: '16px' }}>
             <IonAvatar style={{ width: '80px', height: '80px', marginRight: '16px' }}>
-              <img src={user.avatar} alt="Profile" />
+              <img
+                src={`https://via.placeholder.com/80?text=${user.username.charAt(0)}`}
+                alt="Profile"
+              />
             </IonAvatar>
             <div>
-              <IonCardTitle>{user.name}</IonCardTitle>
-              <IonText color="medium">@{user.username}</IonText>
+              <IonCardTitle>{user.username}</IonCardTitle>
+              <IonText color="medium">{user.email}</IonText>
             </div>
           </div>
         </IonCardHeader>
         <IonCardContent>
-          <p>{user.bio}</p>
+          <p>{user.profileTxt || '自己紹介は登録されていません。'}</p>
           <div style={{ display: 'flex', justifyContent: 'space-around', marginTop: '16px' }}>
             <div style={{ textAlign: 'center' }}>
-              <IonText style={{ fontSize: '18px', fontWeight: 'bold' }}>{user.posts}</IonText>
+              <IonText style={{ fontSize: '18px', fontWeight: 'bold' }}>0</IonText>
               <br />
               <IonText color="medium">投稿</IonText>
             </div>
             <div style={{ textAlign: 'center' }}>
-              <IonText style={{ fontSize: '18px', fontWeight: 'bold' }}>{user.followers}</IonText>
+              <IonText style={{ fontSize: '18px', fontWeight: 'bold' }}>0</IonText>
               <br />
               <IonText color="medium">フォロワー</IonText>
             </div>
             <div style={{ textAlign: 'center' }}>
-              <IonText style={{ fontSize: '18px', fontWeight: 'bold' }}>{user.following}</IonText>
+              <IonText style={{ fontSize: '18px', fontWeight: 'bold' }}>0</IonText>
               <br />
               <IonText color="medium">フォロー中</IonText>
             </div>

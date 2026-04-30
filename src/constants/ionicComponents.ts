@@ -27,6 +27,7 @@ export {
   IonRefresherContent,
   IonText,
   IonTextarea,
+  IonSpinner,
   IonTitle,
   IonToolbar,
   IonAlert,
