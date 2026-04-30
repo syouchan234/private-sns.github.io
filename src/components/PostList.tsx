@@ -134,7 +134,12 @@ const PostList: React.FC<PostListProps> = ({
                 <div>
                   <IonCardTitle style={{ margin: 0, fontSize: '16px' }}>{post.username}</IonCardTitle>
                   <IonText color="medium" style={{ fontSize: '12px' }}>
-                    {new Date(post.timestamp).toLocaleString('ja-JP')}
+                    {(() => {
+                      const date = new Date(post.timestamp);
+                      return isNaN(date.getTime())
+                        ? post.timestamp
+                        : date.toLocaleString('ja-JP');
+                    })()}
                   </IonText>
                 </div>
               </div>

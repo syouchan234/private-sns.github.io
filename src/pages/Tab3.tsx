@@ -28,54 +28,6 @@ interface Tab3Props {
 
 const Tab3: React.FC<Tab3Props> = ({ user, onLogout }) => {
   const [showLogoutAlert, setShowLogoutAlert] = React.useState(false);
-
-  const GAS_URL = 'https://script.google.com/macros/s/AKfycbyHkSezXu5oaf3FLamuHyFIjGlqUFkdRjdmxjKBcbn9ZsWnPtQDkCfgww3omwD3bAVr/exec';
-  /**
-   * 1. GETテスト：A2セルの値を取得する
-   */
-  const runGetTest = async () => {
-    
-    try {
-      console.log('--- GET疎通テスト開始 ---');
-      const url = `${GAS_URL}?mode=get`; 
-      
-      const response = await fetch(url);
-      const result = await response.json();
-
-      console.log('GET成功:', result);
-    } catch (e: any) {
-      console.error('GETエラー:', e);
-    }
-  };
-
-  /**
-   * 2. POST(書き込み)テスト：A3セルに値を書き込む
-   * GAS側がdoGetで待ち受けているため、クエリパラメータでデータを送ります
-   */
-const runPostTest = async () => {
-  try {
-    console.log('--- POST(body)テスト開始 ---');
-    
-    const postBody = new URLSearchParams();
-    postBody.append('mode', 'Auth');//認証モード
-    postBody.append('pass', 'PASSWORD');
-
-    const response = await fetch(GAS_URL, {
-      method: 'POST',
-      // headers をあえて指定しない、もしくは以下のように設定
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: postBody,
-      redirect: 'follow',
-    });
-
-    const result = await response.json();
-    console.log('POST成功:', result);
-  } catch (e: any) {
-    console.error('POST通信エラー:', e);
-  }
-};
   console.log('Tab3 user prop:', user);
 
   if (!user) {
@@ -160,18 +112,6 @@ const runPostTest = async () => {
           <IonLabel>共有</IonLabel>
         </IonItem>
       </IonList>
-
-      <div style={{ padding: '16px 16px 0 16px' }}>
-        <IonButton expand="block" color="tertiary" onClick={runGetTest}>
-          GET疎通テスト (A2取得)
-        </IonButton>
-      </div>
-
-      <div style={{ padding: '16px' }}>
-        <IonButton expand="block" color="success" onClick={runPostTest}>
-          POST(書込)テスト (A3更新)
-        </IonButton>
-      </div>
 
       {/* ログアウトボタン */}
       <div style={{ padding: '16px' }}>

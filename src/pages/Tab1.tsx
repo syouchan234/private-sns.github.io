@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   IonContent,
   IonHeader,
@@ -13,54 +13,48 @@ import {
 import { add } from 'ionicons/icons';
 import PostFormModal from '../components/PostFormModal';
 import PostList, { Post } from '../components/PostList';
+import { createPost, getPosts, getToken } from '../services/api';
 import './Tab1.css';
 
 const Tab1: React.FC = () => {
   const [showPostModal, setShowPostModal] = useState(false);
   const [postContent, setPostContent] = useState('');
-  const [posts, setPosts] = useState<Post[]>([
-    {
-      postId: '1',
-      userId: 'u1',
-      username: 'テストユーザー',
-      content: 'こんにちは！最初の投稿です。',
-      timestamp: '2分前',
-      profileImageId: 'https://via.placeholder.com/40',
-      likes: 5,
-      replyCount: 2,
-    },
-    {
-      postId: '2',
-      userId: 'u2',
-      username: 'デモユーザー',
-      content: 'SNSアプリのテストを開始しました。',
-      timestamp: '1時間前',
-      profileImageId: 'https://via.placeholder.com/40',
-      likes: 12,
-      replyCount: 4,
-    },
-  ]);
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const loadPosts = async () => {
+    setIsLoading(true);
+    const result = await getPosts(20, 0);
+    if (result.status === 'ok' && result.data?.posts) {
+      setPosts(result.data.posts);
+    }
+    setIsLoading(false);
+  };
+
+  useEffect(() => {
+    loadPosts();
+  }, []);
 
   // 投稿を追加
-  const handlePost = () => {
+  const handlePost = async () => {
     if (!postContent.trim()) {
       return;
     }
 
-    const newPost: Post = {
-      postId: String(posts.length + 1),
-      userId: 'current',
-      username: 'あなた',
-      content: postContent,
-      timestamp: '今',
-      profileImageId: 'https://via.placeholder.com/40',
-      likes: 0,
-      replyCount: 0,
-    };
+    const token = getToken();
+    if (!token) {
+      alert('ログイン状態が無効です。再度ログインしてください。');
+      return;
+    }
 
-    setPosts([newPost, ...posts]);
-    setPostContent('');
-    setShowPostModal(false);
+    const result = await createPost(token, postContent);
+    if (result.status === 'ok') {
+      setPostContent('');
+      setShowPostModal(false);
+      await loadPosts();
+    } else {
+      alert(result.message || '投稿に失敗しました。');
+    }
   };
 
   // 返信を追加
@@ -74,11 +68,14 @@ const Tab1: React.FC = () => {
     );
   };
 
+  const handlePostDelete = (postId: string) => {
+    setPosts(posts.filter(post => post.postId !== postId));
+  };
+
   // リフレッシュ
-  const handleRefresh = (event: any) => {
-    setTimeout(() => {
-      event.detail.complete();
-    }, 1000);
+  const handleRefresh = async (event: any) => {
+    await loadPosts();
+    event.detail.complete();
   };
 
   return (
@@ -95,7 +92,7 @@ const Tab1: React.FC = () => {
       </IonRefresher>
 
       {/* 投稿一覧 */}
-      <PostList posts={posts} onReplySubmit={handleReplySubmit} />
+      <PostList posts={posts} onReplySubmit={handleReplySubmit} onPostDelete={handlePostDelete} />
 
       {/* 投稿フォームモーダル */}
       <PostFormModal

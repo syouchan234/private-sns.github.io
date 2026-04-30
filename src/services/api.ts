@@ -9,13 +9,13 @@
 // ============================================
 
 // GAS デプロイID（自分のGASプロジェクトのデプロイIDに置き換え）
-const GAS_DEPLOYMENT_ID = "YOUR_GAS_DEPLOYMENT_ID_HERE";
+const GAS_DEPLOYMENT_ID = "AKfycbyE91v4GA_n1SQGGazH7LEZKUc19TfGvIL6cuHE8ZxhvFuOOEK045-RTzV92q4gDBSK";
 
 // GAS API URL（ウェブアプリとしてデプロイ後のURL）
-const GAS_API_URL = `https://script.google.com/macros/d/${GAS_DEPLOYMENT_ID}/usercontent`;
+const GAS_API_URL = `https://script.google.com/macros/s/${GAS_DEPLOYMENT_ID}/exec`;
 
 // ローカル開発時はモック
-const USE_MOCK_API = false; // 本番環境では false に設定
+const USE_MOCK_API = true; // 本番環境では false に設定
 
 export interface ApiResponse<T = any> {
   status: "ok" | "error";
@@ -63,10 +63,7 @@ async function sendPostRequest(payload: Record<string, any>): Promise<ApiRespons
   try {
     const response = await fetch(GAS_API_URL, {
       method: "POST",
-      body: JSON.stringify(payload),
-      headers: {
-        "Content-Type": "application/json"
-      }
+      body: JSON.stringify(payload)
     });
 
     if (!response.ok) {
@@ -101,10 +98,7 @@ async function sendGetRequest(params: Record<string, any>): Promise<ApiResponse>
 
     const url = `${GAS_API_URL}?${queryString}`;
     const response = await fetch(url, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json"
-      }
+      method: "GET"
     });
 
     if (!response.ok) {
