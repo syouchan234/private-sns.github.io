@@ -9,7 +9,7 @@
 // ============================================
 
 // GAS デプロイID（自分のGASプロジェクトのデプロイIDに置き換え）
-const GAS_DEPLOYMENT_ID = "AKfycbyE91v4GA_n1SQGGazH7LEZKUc19TfGvIL6cuHE8ZxhvFuOOEK045-RTzV92q4gDBSK";
+const GAS_DEPLOYMENT_ID = "AKfycbzP61zu_EOz-3GFWJWaJpJfzZmd9W2RCfwwZYiok8as_dnr_JM7XO6zeczJzEn0Fs_c";
 
 // GAS API URL（ウェブアプリとしてデプロイ後のURL）
 const GAS_API_URL = `https://script.google.com/macros/s/${GAS_DEPLOYMENT_ID}/exec`;
@@ -59,24 +59,29 @@ export interface Reply {
  * @param {object} payload - リクエストボディ
  * @returns {Promise<ApiResponse>} APIレスポンス
  */
+// src/services/api.ts
+
 async function sendPostRequest(payload: Record<string, any>): Promise<ApiResponse> {
   try {
     const response = await fetch(GAS_API_URL, {
       method: "POST",
+      // 【重要】Content-Type を text/plain に指定して、
+      // プリフライト（OPTIONS）リクエストが発生するのを防ぎます。
+      headers: {
+        "Content-Type": "text/plain",
+      },
       body: JSON.stringify(payload)
     });
 
-    if (!response.ok) {
-      throw new Error(`HTTP Error: ${response.status}`);
-    }
-
+    // GASは成功時にリダイレクトが発生するため、
+    // ここで直接 response.json() を呼ぶのが最も安定します。
     const data = await response.json();
     return data;
   } catch (error) {
     console.error("API Error:", error);
     return {
       status: "error",
-      message: "ネットワークエラーが発生しました",
+      message: "ネットワークエラーが発生しました。GASのデプロイ設定を『全員』にしているか再確認してください。",
       code: 500
     };
   }

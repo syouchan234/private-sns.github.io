@@ -81,6 +81,55 @@ const App: React.FC = () => {
     setActiveTab('tab1');
   };
 
+// App.tsx の中身を修正
+
+// GASのURL（実際のURLに置き換えてください）
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbzP61zu_EOz-3GFWJWaJpJfzZmd9W2RCfwwZYiok8as_dnr_JM7XO6zeczJzEn0Fs_c/exec';
+
+const handlePostTEST = async () => {
+
+  const payload = {
+    mode: 'postTEST', // クエリパラメータではなく、Bodyに含める
+    message: 'This is body data',
+    timestamp: new Date().toISOString()
+  };
+
+  try {
+    const response = await fetch(GAS_URL, {
+      method: 'POST',
+      headers: {
+        // application/json だとCORSエラーになるため、text/plain で送るのがGASの鉄則[cite: 23]
+        'Content-Type': 'text/plain',
+      },
+      body: JSON.stringify(payload), // すべてここで送る
+    });
+
+    const data = await response.json();
+    console.log('POST成功:', data);
+    alert('GET疎通成功！メッセージ: ' + data.data);
+  } catch (error) {
+    console.error('POST失敗:', error);
+  }
+};
+
+// APIの動作確認用関数 GETリクエスト
+const handleGetTEST = async () => {
+  try {
+    console.log('Sending GET test...');
+    // クエリパラメータに mode=getTEST を付与
+    const response = await fetch(`${GAS_URL}?mode=getTEST`);
+    const data = await response.json();
+    console.log('GET Response:', data);
+    
+    if (data.status === 'ok') {
+      alert('GET疎通成功！メッセージ: ' + data.data);
+    }
+  } catch (error) {
+    console.error('GET Error:', error);
+  }
+};
+
+  // 自動ログインの処理
   useEffect(() => {
     const token = getToken();
     if (!token) {
@@ -114,6 +163,8 @@ const App: React.FC = () => {
     return (
       <IonApp>
         <LoginForm onLogin={handleLogin} />
+        <IonButton onClick={handlePostTEST}>動作確認POST</IonButton>
+        <IonButton onClick={handleGetTEST}>動作確認GET</IonButton>
       </IonApp>
     );
   }
