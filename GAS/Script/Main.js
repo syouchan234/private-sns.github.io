@@ -20,16 +20,25 @@ function doGet(e) {
     const params = e.parameter || {};
     const mode = params.mode || "";
 
+    let response;
     switch (mode) {
       case "getPosts":
-        return handleGetPosts(params);
+        response = handleGetPosts(params);
+        break;
       case "getUserPosts":
-        return handleGetUserPosts(params);
+        response = handleGetUserPosts(params);
+        break;
       case "getReplies":
-        return handleGetReplies(params);
+        response = handleGetReplies(params);
+        break;
+      //疎通確認用
+      case "getTEST":
+        response = handleGetTEST(params);
+        break;
       default:
-        return createErrorResponse("無効なモードです");
+        response = createErrorResponse("無効なモードです");
     }
+    return response;
   } catch (error) {
     return createErrorResponse("サーバーエラーが発生しました");
   }
@@ -40,24 +49,37 @@ function doPost(e) {
     const params = parsePostParams(e);
     const mode = params.mode || "";
 
+    let response;
     switch (mode) {
       case "login":
-        return handleLogin(params);
+        response = handleLogin(params);
+        break;
       case "auto_login":
-        return handleAutoLogin(params);
+        response = handleAutoLogin(params);
+        break;
       case "registUser":
-        return handleRegistUser(params);
+        response = handleRegistUser(params);
+        break;
       case "createPost":
-        return handleCreatePost(params);
+        response = handleCreatePost(params);
+        break;
       case "deletePost":
-        return handleDeletePost(params);
+        response = handleDeletePost(params);
+        break;
       case "createReply":
-        return handleCreateReply(params);
+        response = handleCreateReply(params);
+        break;
       case "deleteReply":
-        return handleDeleteReply(params);
+        response = handleDeleteReply(params);
+        break;
+      //疎通確認用
+      case "postTEST":
+        response = handlePostTEST(params);
+        break;
       default:
-        return createErrorResponse("無効なモードです");
+        response = createErrorResponse("無効なモードです");
     }
+    return response;
   } catch (error) {
     return createErrorResponse("サーバーエラーが発生しました");
   }

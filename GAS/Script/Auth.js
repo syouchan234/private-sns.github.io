@@ -60,8 +60,8 @@ function handleRegistUser(params) {
 }
 
 function handleLogin(params) {
-  const id = (params.id || "").trim();
-  const password = params.pass || "";
+  const id = (params.username || "").trim(); 
+  const password = params.password || "";
 
   if (!id || !password) {
     return createErrorResponse("ユーザーIDまたはパスワードが入力されていません");

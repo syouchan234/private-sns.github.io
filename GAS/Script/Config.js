@@ -1,6 +1,6 @@
 ﻿// Google Spreadsheet のスプレッドシート ID を設定してください
-const SPREADSHEET_ID = "1UgNd_diV40h5UsdV7cQvYMKt2D3X09nIcT0tkPZOywY";
-const IMAGE_FOLDER_ID = "1p5O8heDxKL7HYnd9hK8vestD3vbn89hY";
+const SPREADSHEET_ID = "";
+const IMAGE_FOLDER_ID = "";
 
 const SHEETS = {
   USERS: "UserInformation_Tbl",
