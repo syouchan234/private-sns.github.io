@@ -9,13 +9,13 @@
 // ============================================
 
 // GAS デプロイID（自分のGASプロジェクトのデプロイIDに置き換え）
-const GAS_DEPLOYMENT_ID = "AKfycbzP61zu_EOz-3GFWJWaJpJfzZmd9W2RCfwwZYiok8as_dnr_JM7XO6zeczJzEn0Fs_c";
+const GAS_DEPLOYMENT_ID = "AKfycbwlQSj4Pno2swDtdF09T2BoixnjuTEl65WzbmvBItkJt1RlwRjgGJ7471clioGJvWR2";
 
 // GAS API URL（ウェブアプリとしてデプロイ後のURL）
 const GAS_API_URL = `https://script.google.com/macros/s/${GAS_DEPLOYMENT_ID}/exec`;
 
 // ローカル開発時はモック
-const USE_MOCK_API = true; // 本番環境では false に設定
+// const USE_MOCK_API = true; // 本番環境では false に設定
 
 export interface ApiResponse<T = any> {
   status: "ok" | "error";

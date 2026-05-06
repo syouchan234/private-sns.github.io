@@ -98,7 +98,7 @@ const handlePostTEST = async () => {
     const response = await fetch(GAS_URL, {
       method: 'POST',
       headers: {
-        // application/json だとCORSエラーになるため、text/plain で送るのがGASの鉄則[cite: 23]
+        // application/json だとCORSエラーになるため、text/plain で送るのがGASの鉄則
         'Content-Type': 'text/plain',
       },
       body: JSON.stringify(payload), // すべてここで送る
@@ -106,7 +106,7 @@ const handlePostTEST = async () => {
 
     const data = await response.json();
     console.log('POST成功:', data);
-    alert('GET疎通成功！メッセージ: ' + data.data);
+    alert('POST疎通成功！メッセージ: ' + data.data);
   } catch (error) {
     console.error('POST失敗:', error);
   }
